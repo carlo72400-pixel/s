@@ -9,8 +9,11 @@ p{max-width:40ch;line-height:1.6}</style></head><body><p id="m">Opening&hellip;<
 (async()=>{
   const m=document.getElementById('m');
   try{
-    const key=(location.hash||'').slice(1).replace(/\.me$/,'');
+    let key=(location.hash||'').slice(1).replace(/\.me$/,'');
+    // reload safety net: a refresh that lost the fragment still opens
+    if(!key){try{key=sessionStorage.getItem('rk')||''}catch(e){}}
     if(!key)throw new Error('nokey');
+    try{sessionStorage.setItem('rk',key)}catch(e){}
     const r=await fetch('deck.bin');
     if(!r.ok)throw new Error('gone');
     const buf=new Uint8Array(await r.arrayBuffer());
